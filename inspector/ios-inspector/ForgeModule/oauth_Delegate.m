@@ -19,6 +19,7 @@ NSMutableDictionary<NSString*, oauth_Delegate*> *DelegateMap = nil;
     }
     delegate.persistKey = [NSString stringWithFormat:@"oauth/%@", authorizationEndpoint.absoluteString];
     delegate.authorizationState = nil;
+    delegate.currentAuthorizationFlow = nil;
     [delegate restoreAuthorizationState];
     return delegate;
 }
@@ -81,7 +82,7 @@ NSMutableDictionary<NSString*, oauth_Delegate*> *DelegateMap = nil;
                                                     additionalParameters:nil];
     }
     if (DelegateMap == nil) {
-        DelegateMap = [[NSMutableDictionary alloc] initWithCapacity:1];
+        DelegateMap = [[NSMutableDictionary alloc] init];
     }
     [DelegateMap setObject:self forKey:request.state];
     self.currentAuthorizationFlow = [OIDAuthState authStateByPresentingAuthorizationRequest:request

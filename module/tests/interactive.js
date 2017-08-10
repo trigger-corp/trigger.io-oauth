@@ -4,10 +4,10 @@
 module("oauth");
 
 var config_facebook = {
-    "client_id": "1493898367579297",
-    "client_secret": "c29fdd53c851356337d1bcc3139b5e27",
+    "client_id": "617039718370339",
+    "client_secret": "8344897fc28e067086bae1648596928c",
     "redirect_uri": "https://appauth.demo-app.io/oauth2redirect",
-    //"redirect_uri": "https://io.trigger.forge.android.inspector/oauth2redirect",
+    //"redirect_uri": "https://docker.trigger.io/oauth2redirect",
     "authorization_scope": "public_profile",
     "authorization_endpoint": "https://www.facebook.com/dialog/oauth",
     "token_endpoint": "https://graph.facebook.com/v2.5/oauth/access_token"
@@ -17,6 +17,36 @@ var config_facebook = {
 asyncTest("Attempt to make a oauth login to Facebook", 1, function () {
     pforge.oauth.authorize(config_facebook).then(function (endpoint) {
         askQuestion("Is this Facebook's authorization endpoint: " + JSON.stringify(endpoint), {
+            Yes: function () {
+                ok(true, "User claims success");
+                start();
+            },
+            No: function () {
+                ok(false, "User claims failure");
+                start();
+            }
+        });
+
+    }).catch(function (e) {
+        ok(false, "API method returned failure: " + JSON.stringify(e));
+        start();
+    });
+});
+
+
+asyncTest("Attempt to get user profile information from Facebook", 1, function () {
+    pforge.oauth.authorize(config_facebook).then(function (endpoint) {
+        return pforge.oauth.actionWithToken(endpoint);
+    }).then(function (token) {
+        return $.ajax({
+            url: "https://graph.facebook.com/v2.5/me",
+            headers: {
+                "Authorization": "Bearer " + token.access
+            }
+        });
+
+    }).then(function (profile) {
+        askQuestion("Is this your user profile: <pre>" + JSON.stringify(profile, null, 2) + "</pre>", {
             Yes: function () {
                 ok(true, "User claims success");
                 start();
