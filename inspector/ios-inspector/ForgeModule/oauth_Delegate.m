@@ -8,8 +8,7 @@
 
 #import "oauth_Delegate.h"
 
-id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
-
+NSMutableDictionary<NSString*, oauth_Delegate*> *DelegateMap = nil;
 
 @implementation oauth_Delegate
 
@@ -53,9 +52,10 @@ id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
 }
 
 
-- (void)authorize:(OIDServiceConfiguration*_Nonnull)configuration
-        client_id:(NSString*_Nonnull)client_id redirect_uri:(NSURL*)redirect_uri authorization_scope:(NSString*)authorization_scope
-         callback:(OIDAuthStateAuthorizationCallback _Nonnull )callback
+- (void)authorizeWithConfiguration:(OIDServiceConfiguration*_Nonnull)configuration
+                client_id:(NSString*_Nonnull)client_id client_secret:(NSString*_Nullable)client_secret
+             redirect_uri:(NSURL*_Nonnull)redirect_uri authorization_scope:(NSString*_Nonnull)authorization_scope
+                 callback:(OIDAuthStateAuthorizationCallback _Nonnull)callback
 {
     if (_authorizationState != nil && _authorizationState.isAuthorized) {
         [ForgeLog d:[NSString stringWithFormat:@"Have an authorization state and it is: %@", _authorizationState]];
@@ -63,13 +63,28 @@ id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
         return;
     }
 
-    OIDAuthorizationRequest *request = [[OIDAuthorizationRequest alloc] initWithConfiguration:configuration
-                                                                                     clientId:client_id
-                                                                                       scopes:[authorization_scope componentsSeparatedByString:@" "]
-                                                                                  redirectURL:redirect_uri
-                                                                                 responseType:OIDResponseTypeCode
-                                                                         additionalParameters:nil];
-    currentAuthorizationFlow = [OIDAuthState authStateByPresentingAuthorizationRequest:request
+    OIDAuthorizationRequest *request = NULL;
+    if (client_secret == NULL) {
+        request = [[OIDAuthorizationRequest alloc] initWithConfiguration:configuration
+                                                                clientId:client_id
+                                                                  scopes:[authorization_scope componentsSeparatedByString:@" "]
+                                                             redirectURL:redirect_uri
+                                                            responseType:OIDResponseTypeCode
+                                                    additionalParameters:nil];
+    } else {
+        request = [[OIDAuthorizationRequest alloc] initWithConfiguration:configuration
+                                                                clientId:client_id
+                                                            clientSecret:client_secret
+                                                                  scopes:[authorization_scope componentsSeparatedByString:@" "]
+                                                             redirectURL:redirect_uri
+                                                            responseType:OIDResponseTypeCode
+                                                    additionalParameters:nil];
+    }
+    if (DelegateMap == nil) {
+        DelegateMap = [[NSMutableDictionary alloc] initWithCapacity:1];
+    }
+    [DelegateMap setObject:self forKey:request.state];
+    self.currentAuthorizationFlow = [OIDAuthState authStateByPresentingAuthorizationRequest:request
                                                                        presentingViewController:[[ForgeApp sharedApp] viewController]
     callback:^(OIDAuthState *_Nullable authorizationState, NSError *_Nullable error) {
         [self updateAuthorizationState:authorizationState];

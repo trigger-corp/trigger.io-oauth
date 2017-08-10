@@ -58,6 +58,10 @@ extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
     }
     NSString *client_id = [config objectForKey:@"client_id"];
 
+    NSString *client_secret = [config objectForKey:@"client_secret"]
+                            ? [config objectForKey:@"client_secret"]
+                            : NULL;
+
     if (![config objectForKey:@"redirect_uri"]) {
         [task error:@"Options needs to contain a redirect_uri" type:@"EXPECTED_FAILURE" subtype:nil];
         return;
@@ -65,12 +69,13 @@ extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
     NSURL *redirect_uri = [NSURL URLWithString:[config objectForKey:@"redirect_uri"]];
 
     NSString *authorization_scope = [config objectForKey:@"authorization_scope"]
-                                  ? [config objectForKey:@"redirect_uri"]
+                                  ? [config objectForKey:@"authorization_scope"]
                                   : @"email";
 
     oauth_Delegate *delegate = [oauth_Delegate delegateWithAuthorizationEndpoint:[configuration authorizationEndpoint]];
-    [delegate authorize:configuration
-              client_id:client_id redirect_uri:redirect_uri authorization_scope:authorization_scope
+    [delegate authorizeWithConfiguration:configuration
+              client_id:client_id client_secret:client_secret
+           redirect_uri:redirect_uri authorization_scope:authorization_scope
                callback:^(OIDAuthState *_Nullable authorizationState, NSError *_Nullable error) {
         if (!authorizationState) {
             [task error:[NSString stringWithFormat:@"Authorization error: %@", [error localizedDescription]] type:@"EXPECTED_FAILTURE" subtype:nil];
@@ -93,7 +98,7 @@ extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
                                                                 NSError *_Nullable error) {
         if (error) {
             NSLog(@"Error obtaining token: %@", [error localizedDescription]);
-            [task error:[NSString stringWithFormat:@"Error obtaining token: %@", [error localizedDescription]]];
+            [task error:[NSString stringWithFormat:@"Error obtaining token: %@", [error localizedDescription]] type:@"EXPECTED_FAILTURE" subtype:nil];
             return;
         }
 

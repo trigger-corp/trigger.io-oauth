@@ -30,16 +30,14 @@ public class EventListener extends ForgeEventListener {
 
         final AuthorizationResponse authorizationResponse = AuthorizationResponse.fromIntent(intent);
         AuthorizationException authorizationException = AuthorizationException.fromIntent(intent);
-        if (authorizationResponse == null
-                || !authorizationResponse.request.additionalParameters.containsKey("io.trigger.forge.modules.oauth")) {
+        if (authorizationResponse == null) {
             ForgeLog.e("oauth.EventListener::onNewIntent failed to respond to an unknown intent: " + intent.toString());
             return;
         }
 
-        String callid = authorizationResponse.request.additionalParameters.get("io.trigger.forge.modules.oauth");
-        final Delegate delegate = Delegate.TaskMap.remove(callid);
+        final Delegate delegate = Delegate.DelegateMap.remove(authorizationResponse.request.state);
         if (delegate == null) {
-            ForgeLog.e("Could not determine delegate for authorization request with callid: " + callid);
+            ForgeLog.e("Could not determine delegate for authorization request with state: " + authorizationResponse.request.state);
             return;
         }
 

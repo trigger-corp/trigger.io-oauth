@@ -27,7 +27,10 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class Delegate {
 
-    public static HashMap<String, Delegate> TaskMap = new HashMap<>();
+    private static final String EXTRA_AUTH_SERVICE_DISCOVERY = "authServiceDiscovery";
+    private static final String EXTRA_CLIENT_SECRET = "clientSecret";
+
+    public static HashMap<String, Delegate> DelegateMap = new HashMap<>();
     public static AuthorizationService authService; // not sure if can be static
 
 
@@ -95,17 +98,15 @@ public class Delegate {
     }
 
 
-    public void authorize(final String callid, final AuthorizationServiceConfiguration configuration,
-                          final String client_id, final String redirect_uri, final String authorization_scope,
-                          final APICallback callback) {
+    public void authorize(final AuthorizationServiceConfiguration configuration,
+                          final String client_id, final String client_secret, final String redirect_uri, final String authorization_scope,
+                          final APICallback apiCallback) {
 
         if (this.authorizationState.isAuthorized()) {
         ForgeLog.d("Have an authorization state and it is:" + this.authorizationState);
-            callback.run(this.authorizationState, null);
+            apiCallback.run(this.authorizationState, null);
             return;
         }
-
-        Delegate.TaskMap.put(callid, this);
 
         AuthorizationRequest.Builder authRequestBuilder =
                 new AuthorizationRequest.Builder(configuration,     // the authorization service configuration
@@ -113,13 +114,11 @@ public class Delegate {
                         ResponseTypeValues.CODE,  // the response_type value: we want a code
                         Uri.parse(redirect_uri)); // the redirect URI to which the auth response is sent
 
-        HashMap<String, String> taskInfo = new HashMap<String, String>();
-        taskInfo.put("io.trigger.forge.modules.oauth", callid);
         AuthorizationRequest authRequest = authRequestBuilder
                 .setScope(authorization_scope)
-                //.setLoginHint("bob@gmail.com") // TODO make it an option
-                .setAdditionalParameters(taskInfo)
                 .build();
+
+        Delegate.DelegateMap.put(authRequest.state, this);
 
         final Delegate self = this;
 
@@ -129,7 +128,7 @@ public class Delegate {
             public void onTokenRequestCompleted(TokenResponse response, AuthorizationException exception) {
                 self.authorizationState.update(response, exception);
                 self.persistAuthorizationState();
-                callback.run(self.authorizationState, exception);
+                apiCallback.run(self.authorizationState, exception);
             }
         };
 
@@ -139,12 +138,24 @@ public class Delegate {
             public void run(AuthorizationResponse response, AuthorizationException exception) {
                 self.authorizationState.update(response, exception);
                 self.persistAuthorizationState();
-                Delegate.authService.performTokenRequest(response.createTokenExchangeRequest(), tokenResponseCallback);
+                if (response.additionalParameters.containsKey("error_message")) { // handle non-standard error responses (e.g. Facebook)
+                    apiCallback.run(self.authorizationState, exception);
+                    return;
+                }
+
+                HashMap<String, String> additionalParams = new HashMap<>();
+                if (client_secret != null) {
+                    additionalParams.put("client_secret", client_secret);
+                }
+                Delegate.authService.performTokenRequest(response.createTokenExchangeRequest(additionalParams), tokenResponseCallback);
             }
         };
 
         // Step 1: Kick off authorization flow
         Intent intent = new Intent(ForgeApp.getActivity().getApplicationContext(), ForgeActivity.class);
+        if (client_secret != null) {
+            intent.putExtra(EXTRA_CLIENT_SECRET, client_secret);
+        }
         PendingIntent pendingIntent = PendingIntent.getActivity(ForgeApp.getActivity(), 0, intent, 0);
         Delegate.authService.performAuthorizationRequest(authRequest, pendingIntent);
     }

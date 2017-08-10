@@ -60,6 +60,10 @@ public class API {
         }
         final String client_id = options.get("client_id").getAsString();
 
+        final String client_secret = options.has("client_secret")
+                ? options.get("client_secret").getAsString()
+                : null;
+
         if (!options.has("redirect_uri")) {
             task.error("Options needs to contain a redirect_uri", "EXPECTED_FAILURE", null);
             return;
@@ -71,18 +75,19 @@ public class API {
                 : "email";
 
         Delegate delegate = Delegate.delegateWithAuthorizationEndpoint(configuration.authorizationEndpoint);
-        delegate.authorize(task.callid, configuration, client_id, redirect_uri, authorization_scope, new Delegate.APICallback() {
+        delegate.authorize(configuration, client_id, client_secret, redirect_uri, authorization_scope, new Delegate.APICallback() {
             @Override
             public void run(AuthState authorizationState, AuthorizationException ex) {
                 if (ex != null) {
-                    ForgeLog.e("Failed to perform authorization request: " + ex.getLocalizedMessage());
+                    ForgeLog.e("Exception while performing authorization request: " + ex.getLocalizedMessage());
                     task.error(ex.getLocalizedMessage(), "UNEXPECTED_FAILURE", null);
                     return;
+                } else if (authorizationState.getLastAuthorizationResponse().additionalParameters.containsKey("error_message")) {
+                    String error_message = authorizationState.getLastAuthorizationResponse().additionalParameters.get("error_message");
+                    ForgeLog.e("Failed to perform authorization request: " + error_message);
+                    task.error(error_message, "EXPECTED_FAILURE", null);
+                    return;
                 }
-                // TODO add and/or cache other endpoints?
-                AuthorizationServiceDiscovery discovery = authorizationState.getAuthorizationServiceConfiguration().discoveryDoc;
-                Uri userInfoEndpoint = discovery.getUserinfoEndpoint();
-                ForgeLog.d("USERINFO ENDPOINT: " + userInfoEndpoint.toString());
                 task.success(configuration.authorizationEndpoint.toString());
             }
         });

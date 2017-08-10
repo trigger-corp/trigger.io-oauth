@@ -16,6 +16,7 @@
 
 @property(nonatomic, strong, nullable) NSString *persistKey;
 @property(nonatomic, strong, nullable) OIDAuthState *authorizationState;
+@property(nonatomic, strong, nullable) id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
 
 + (oauth_Delegate*_Nullable) delegateWithAuthorizationEndpoint:(NSURL*_Nonnull)authorizationEndpoint;
 
@@ -23,8 +24,9 @@
 - (void)updateAuthorizationState:(OIDAuthState*_Nonnull)authorizationState;
 - (void)clearAuthorizationState;
 
-- (void)authorize:(OIDServiceConfiguration*_Nonnull)configuration
-        client_id:(NSString*_Nonnull)client_id redirect_uri:(NSURL*_Nonnull)redirect_uri authorization_scope:(NSString*_Nonnull)authorization_scope
+- (void)authorizeWithConfiguration:(OIDServiceConfiguration*_Nonnull)configuration
+        client_id:(NSString*_Nonnull)client_id client_secret:(NSString*_Nullable)client_secret
+     redirect_uri:(NSURL*_Nonnull)redirect_uri authorization_scope:(NSString*_Nonnull)authorization_scope
          callback:(OIDAuthStateAuthorizationCallback _Nonnull)callback;
 
 @end

@@ -7,6 +7,11 @@
             "required": true,
             "type": "string"
         },
+        "redirect_scheme_alt": {
+            "description": "TODO deleteme",
+            "required": false,
+            "type": "string"
+        },
         "providers": {
             "type": "array",
             "description": "TODO",
@@ -24,6 +29,11 @@
                     "client_id": {
                         "description": "TODO",
                         "required": true,
+                        "type": "string"
+                    },
+                    "client_secret": {
+                        "description": "TODO",
+                        "required": false,
                         "type": "string"
                     },
                     "redirect_uri": {
