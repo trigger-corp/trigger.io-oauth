@@ -1,3 +1,3 @@
 [
-    { "do": { "ios_add_url_handlers": { "scheme": "{{modules.oauth.config.redirect_scheme}}" } } }
+    { "do": { "ios_add_url_handler": { "scheme": "{{modules.oauth.config.redirect_scheme}}" } } }
 ]
