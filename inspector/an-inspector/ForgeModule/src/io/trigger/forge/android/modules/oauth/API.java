@@ -54,7 +54,6 @@ public class API {
 
 
     private static void _authorize_configuration(final ForgeTask task, final JsonObject options, final AuthorizationServiceConfiguration configuration) {
-
         if (!options.has("client_id")) {
             task.error("Options needs to contain a client_id", "EXPECTED_FAILURE", null);
             return;
@@ -88,6 +87,7 @@ public class API {
             }
         });
     }
+
 
     public static void actionWithToken(final ForgeTask task, @ForgeParam("endpoint") final String endpoint) {
         Delegate delegate = Delegate.delegateWithAuthorizationEndpoint(Uri.parse(endpoint));

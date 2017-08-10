@@ -8,9 +8,7 @@
 
 #import "oauth_Delegate.h"
 
-//NSMutableDictionary<NSString*, oauth_Delegate*> *oauth_ProviderMap;
-
-id<OIDAuthorizationFlowSession> currentAuthorizationFlow; // TODO not ideal
+id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
 
 
 @implementation oauth_Delegate
@@ -48,6 +46,7 @@ id<OIDAuthorizationFlowSession> currentAuthorizationFlow; // TODO not ideal
     [prefs synchronize];
 }
 
+
 - (void)clearAuthorizationState {
     NSUserDefaults* prefs = [NSUserDefaults standardUserDefaults];
     [prefs removeObjectForKey:_persistKey];
@@ -77,7 +76,6 @@ id<OIDAuthorizationFlowSession> currentAuthorizationFlow; // TODO not ideal
         callback(authorizationState, error);
     }];
 }
-
 
 
 @end

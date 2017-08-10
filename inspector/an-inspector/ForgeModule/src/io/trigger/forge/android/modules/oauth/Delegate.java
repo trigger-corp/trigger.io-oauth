@@ -25,8 +25,6 @@ import io.trigger.forge.android.core.ForgeLog;
 import static android.content.Context.MODE_PRIVATE;
 
 
-
-
 public class Delegate {
 
     public static HashMap<String, Delegate> TaskMap = new HashMap<>();

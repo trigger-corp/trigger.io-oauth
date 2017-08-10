@@ -1,20 +1,21 @@
+//
+//  oauth_API.m
+//  ForgeModule
+//
+//  Created by Antoine van Gelder on 2017/08/02.
+//  Copyright © 2017 Trigger Corp. All rights reserved.
+//
+
 #import <AppAuth/AppAuth.h>
 
 #import "oauth_Delegate.h"
 #import "oauth_API.h"
 
-extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow; // TODO not ideal
+extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
 
 @implementation oauth_API
 
-
 + (void)authorize:(ForgeTask*)task config:(NSDictionary*)config {
-
-    // TODO support implit flows? probably not because client secrets are a bad idea for devices…
-    // https://stackoverflow.com/questions/16321455/
-    // facebook, microsoft, github: https://github.com/iainmcgin/AppAuth-Demo
-    // https://blog.gisspan.com/2017/02/Implementing-OAuth-on-mobile-Facebook-login-as-example.html
-
     // Option 1: discovery uri
     if ([config objectForKey:@"discovery_endpoint"]) {
         NSURL *discovery_endpoint = [NSURL URLWithString:[config objectForKey:@"discovery_endpoint"]];
@@ -110,78 +111,5 @@ extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow; // TODO not ide
     [task success:nil];
 }
 
-
-/*+ (void)userProfile:(ForgeTask*)task authorization_endpoint:(NSString*)authorization_endpoint accessToken:(NSString*)accessToken idToken:(NSString*)idToken {
-
-    oauth_Delegate *delegate = [oauth_Delegate delegateWithAuthorizationEndpoint:[NSURL URLWithString:authorization_endpoint]];
-    if (delegate.authorizationState == nil || !delegate.authorizationState.isAuthorized) {
-        [task error:@"Endpoint is not authorized" type:@"EXPECTED_FAILTURE" subtype:nil];
-        return;
-    }
-
-    NSURL *userinfoEndpoint = delegate.authorizationState.lastAuthorizationResponse.request.configuration.discoveryDocument.userinfoEndpoint;
-    if (!userinfoEndpoint) {
-        NSLog(@"Userinfo endpoint not declared in discovery document");
-        [task error:[NSString stringWithFormat:@"Userinfo endpoint not declared in discovery document"]];
-        return;
-    }
-
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:userinfoEndpoint];
-    NSString *authorizationHeaderValue = [NSString stringWithFormat:@"Bearer %@", accessToken];
-    [request addValue:authorizationHeaderValue forHTTPHeaderField:@"Authorization"];
-
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration
-                                                          delegate:nil
-                                                     delegateQueue:nil];
-
-    // performs HTTP request
-    NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
-        dispatch_async(dispatch_get_main_queue(), ^() {
-           if (error) {
-               NSLog(@"HTTP request failed %@", error);
-               [task error:[NSString stringWithFormat:@"HTTP request failed %@", error]];
-               return;
-           }
-           if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
-               NSLog(@"Non-HTTP response");
-               [task error:@"Non-HTTP response"];
-               return;
-           }
-
-           NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-           id jsonDictionaryOrArray =
-           [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
-
-           if (httpResponse.statusCode != 200) {
-               // server replied with an error
-               NSString *responseText = [[NSString alloc] initWithData:data
-                                                              encoding:NSUTF8StringEncoding];
-               if (httpResponse.statusCode == 401) {
-                   // "401 Unauthorized" generally indicates there is an issue with the authorization
-                   // grant. Puts OIDAuthState into an error state.
-                   NSError *oauthError =
-                   [OIDErrorUtilities resourceServerAuthorizationErrorWithCode:0
-                                                                 errorResponse:jsonDictionaryOrArray
-                                                               underlyingError:error];
-                   [delegate.authorizationState updateWithAuthorizationError:oauthError];
-                   // log error
-                   NSLog(@"Authorization Error (%@). Response: %@", oauthError, responseText);
-                   [task error:[NSString stringWithFormat:@"Authorization Error (%@). Response: %@", oauthError, responseText]];
-               } else {
-                   NSLog(@"HTTP: %d. Response: %@", (int)httpResponse.statusCode, responseText);
-                   [task error:[NSString stringWithFormat:@"HTTP: %d. Response: %@", (int)httpResponse.statusCode, responseText]];
-               }
-               return;
-           }
-
-           // success response
-           NSLog(@"Success: %@", jsonDictionaryOrArray);
-           [task success:jsonDictionaryOrArray];
-       });
-	}];
-
-    [postDataTask resume];
-}*/
 
 @end
