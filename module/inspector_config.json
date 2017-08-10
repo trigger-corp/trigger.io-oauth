@@ -1,0 +1,30 @@
+{
+    "core": {
+        "android": {
+            "remote_debugging": true
+        }
+    },
+    "this_module": {
+        "config": {
+            "redirect_scheme": "com.googleusercontent.apps.627734613405-irkg4q6dbq01h0so0ltb17f9kgc4ubfn",
+            "providers": [
+                {
+                    "name": "google",
+                    "client_id": "627734613405-irkg4q6dbq01h0so0ltb17f9kgc4ubfn.apps.googleusercontent.com",
+                    "redirect_uri": "com.googleusercontent.apps.627734613405-irkg4q6dbq01h0so0ltb17f9kgc4ubfn:/oauth2redirect",
+                    "authorization_scope": "openid email profile",
+                    "discovery_uri": "https://accounts.google.com/.well-known/openid-configuration"
+                },
+                {
+                    "name": "facebook",
+                    "client_id": "TODO",
+                    "redirect_uri": "TODO",
+                    "authorization_endpoint": "TODO",
+                    "token_endpoint": "TODO",
+                    "registration_endpoint": "TODO"
+                }
+            ]
+        }
+    },
+    "modules": {}
+}

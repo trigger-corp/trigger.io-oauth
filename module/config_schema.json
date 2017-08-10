@@ -1,0 +1,65 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "redirect_scheme": {
+            "description": "TODO",
+            "required": true,
+            "type": "string"
+        },
+        "providers": {
+            "type": "array",
+            "description": "TODO",
+            "required": true,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": true,
+                "properties": {
+                    "name": {
+                        "description": "TODO",
+                        "required": true,
+                        "type": "string"
+                    },
+                    "client_id": {
+                        "description": "TODO",
+                        "required": true,
+                        "type": "string"
+                    },
+                    "redirect_uri": {
+                        "description": "TODO",
+                        "required": true,
+                        "type": "string"
+                    },
+                    "authorization_scope": {
+                        "description": "optional",
+                        "required": false,
+                        "type": "string"
+                    },
+
+                    "discovery_uri": {
+                        "description": "TODO",
+                        "required": false,
+                        "type": "string"
+                    },
+
+                    "authorization_endpoint": {
+                        "description": "TODO",
+                        "required": false,
+                        "type": "string"
+                    },
+                    "token_endpoint": {
+                        "description": "TODO",
+                        "required": false,
+                        "type": "string"
+                    },
+                    "registration_endpoint": {
+                        "description": "TODO",
+                        "required": false,
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
