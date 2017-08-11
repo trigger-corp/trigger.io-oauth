@@ -45,7 +45,7 @@ extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
         return;
     }
 
-    [task error:@"Options needs to contain either an authorization_endpoint & token_endpoint or a discovery_endpoint."
+    [task error:@"Provider configuration needs to contain either an authorization_endpoint & token_endpoint or a discovery_endpoint."
            type:@"EXPECTED_FAILURE" subtype:nil];
 }
 
@@ -108,12 +108,37 @@ extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
 }
 
 
-+ (void)signout:(ForgeTask*)task endpoint:(NSString*)endpoint {
-    oauth_Delegate *delegate = [oauth_Delegate delegateWithAuthorizationEndpoint:[NSURL URLWithString:endpoint]];
-    if (delegate.authorizationState != nil) {
-        [delegate clearAuthorizationState];
++ (void)signout:(ForgeTask*)task config:(NSDictionary*)config {
+    if ([config objectForKey:@"authorization_endpoint"]) {
+        NSURL *endpoint = [NSURL URLWithString:[config objectForKey:@"authorization_endpoint"]];
+        oauth_Delegate *delegate = [oauth_Delegate delegateWithAuthorizationEndpoint:endpoint];
+        if (delegate.authorizationState != nil) {
+            [delegate clearAuthorizationState];
+        }
+        [task success:nil];
+        return;
     }
-    [task success:nil];
+
+    if ([config objectForKey:@"discovery_endpoint"]) {
+        NSURL *discovery_endpoint = [NSURL URLWithString:[config objectForKey:@"discovery_endpoint"]];
+        [OIDAuthorizationService discoverServiceConfigurationForDiscoveryURL:discovery_endpoint completion:^(OIDServiceConfiguration *_Nullable configuration, NSError *_Nullable error) {
+            if (!configuration) {
+                NSLog(@"Error retrieving discovery document: %@", [error localizedDescription]);
+                [task error:[error localizedDescription]];
+                return;
+            }
+            NSURL *endpoint = configuration.authorizationEndpoint;
+            oauth_Delegate *delegate = [oauth_Delegate delegateWithAuthorizationEndpoint:endpoint];
+            if (delegate.authorizationState != nil) {
+                [delegate clearAuthorizationState];
+            }
+            [task success:nil];
+        }];
+        return;
+    }
+
+    [task error:@"Provider configuration needs to contain either an authorization_endpoint & token_endpoint or a discovery_endpoint."
+           type:@"EXPECTED_FAILURE" subtype:nil];
 }
 
 

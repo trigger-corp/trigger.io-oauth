@@ -23,13 +23,14 @@ extern NSMutableDictionary<NSString*, oauth_Delegate*> *DelegateMap;
 
 
 + (NSNumber*)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+
+    NSLog(@"oauth_EventListener::openURL -> %@", url);
+
     NSDictionary *response = [url queryAsDictionary];
     if (response == nil) {
         [ForgeLog e:[NSString stringWithFormat:@"Could not determine response for authorization request: %@", url]];
         return @NO;
     }
-
-    NSLog(@"oauth_EventListener::openURL -> %@ -> %@ -> RESPONSE: %@", DelegateMap, url, response);
 
     NSString *state = [response objectForKey:@"state"];
     if (state == nil) {

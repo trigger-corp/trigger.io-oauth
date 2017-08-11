@@ -3,18 +3,13 @@
     "additionalProperties": false,
     "properties": {
         "redirect_scheme": {
-            "description": "TODO",
+            "description": "Redirect schemes to receive the OAuth response",
             "required": true,
-            "type": "string"
-        },
-        "redirect_scheme_alt": {
-            "description": "TODO deleteme",
-            "required": false,
             "type": "string"
         },
         "providers": {
             "type": "array",
-            "description": "TODO",
+            "description": "OAuth provider configurations",
             "required": true,
             "items": {
                 "type": "object",
@@ -22,49 +17,50 @@
                 "required": true,
                 "properties": {
                     "name": {
-                        "description": "TODO",
+                        "description": "A descriptive name for the provider to be used with forge.oauth API calls",
                         "required": true,
                         "type": "string"
                     },
+
                     "client_id": {
-                        "description": "TODO",
+                        "description": "Client id assigned by the OAuth provider",
                         "required": true,
                         "type": "string"
                     },
                     "client_secret": {
-                        "description": "TODO",
+                        "description": "Client secret assigned by the OAuth provider. (Optional)",
                         "required": false,
                         "type": "string"
                     },
                     "redirect_uri": {
-                        "description": "TODO",
+                        "description": "Redirect URI invoked by the OAuth provider to return the OAuth response",
                         "required": true,
                         "type": "string"
                     },
                     "authorization_scope": {
-                        "description": "optional",
+                        "description": "OpenID scope string for authorization request. (Optional)",
                         "required": false,
                         "type": "string"
                     },
 
                     "discovery_uri": {
-                        "description": "TODO",
+                        "description": "Discovery endpoint for OAuth and OpenID services offered by  the provider.",
                         "required": false,
                         "type": "string"
                     },
 
                     "authorization_endpoint": {
-                        "description": "TODO",
+                        "description": "Authorization endpoint for OAuth provider. (Not required if `discovery_uri` is provided)",
                         "required": false,
                         "type": "string"
                     },
                     "token_endpoint": {
-                        "description": "TODO",
+                        "description": "Token endpoint for OAuth provider. (Not required if `discovery_uri` is provided)",
                         "required": false,
                         "type": "string"
                     },
                     "registration_endpoint": {
-                        "description": "TODO",
+                        "description": "Registration endpoint for OAuth provider. (Not required if `discovery_uri` is provided)",
                         "required": false,
                         "type": "string"
                     }

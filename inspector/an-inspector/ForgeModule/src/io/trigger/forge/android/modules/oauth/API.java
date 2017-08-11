@@ -49,7 +49,7 @@ public class API {
             return;
         }
 
-        task.error("Options needs to contain either an authorization_endpoint & token_endpoint or a discovery_endpoint.", "EXPECTED_FAILURE", null);
+        task.error("Provider configuration needs to contain either an authorization_endpoint & token_endpoint or a discovery_endpoint.", "EXPECTED_FAILURE", null);
     }
 
 
@@ -116,14 +116,41 @@ public class API {
     }
 
 
-    public static void signout(final ForgeTask task, @ForgeParam("endpoint") final String endpoint) {
-        Delegate delegate = Delegate.delegateWithAuthorizationEndpoint(Uri.parse(endpoint));
-        if (delegate != null) {
-            delegate.clearAuthorizationState();
+    public static void signout(final ForgeTask task, @ForgeParam("config") final JsonObject config) {
+        if (config.has("authorization_endpoint")) {
+            Uri endpoint = Uri.parse(config.get("authorization_endpoint").getAsString());
+            Delegate delegate = Delegate.delegateWithAuthorizationEndpoint(endpoint);
+            if (delegate != null) {
+                delegate.clearAuthorizationState();
+            }
+            task.success();
+            return;
         }
-        task.success();
-    }
 
+        if (config.has("discovery_endpoint")) {
+            Uri discovery_endpoint = Uri.parse(config.get("discovery_endpoint").getAsString());
+            AuthorizationServiceConfiguration.fetchFromUrl(discovery_endpoint, new RetrieveConfigurationCallback() {
+                @Override
+                public void onFetchConfigurationCompleted(@Nullable AuthorizationServiceConfiguration serviceConfiguration,
+                                                          @Nullable AuthorizationException authorizationException) {
+                    if (authorizationException != null) {
+                        ForgeLog.e("Failed to fetch oauth configuration: " + authorizationException.getLocalizedMessage());
+                        task.error(authorizationException.getLocalizedMessage(), "UNEXPECTED_FAILURE", null);
+                        return;
+                    }
+                    Uri endpoint = serviceConfiguration.authorizationEndpoint;
+                    Delegate delegate = Delegate.delegateWithAuthorizationEndpoint(endpoint);
+                    if (delegate != null) {
+                        delegate.clearAuthorizationState();
+                    }
+                    task.success();
+                }
+            });
+            return;
+        }
+
+        task.error("Provider configuration needs to contain either an authorization_endpoint & token_endpoint or a discovery_endpoint.", "EXPECTED_FAILURE", null);
+    }
 }
 
 

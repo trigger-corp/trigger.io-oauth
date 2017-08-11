@@ -12,8 +12,8 @@ forge.oauth = {
     actionWithToken: function (endpoint, success, error) {
         forge.internal.call('oauth.actionWithToken', {endpoint: endpoint}, success, error);
     },
-    signout: function (endpoint, success, error) {
-        forge.internal.call('oauth.signout', {endpoint:endpoint}, success, error);
+    signout: function (config, success, error) {
+        forge.internal.call('oauth.signout', {config:config}, success, error);
     }
 };
 

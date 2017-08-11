@@ -32,6 +32,7 @@ public class EventListener extends ForgeEventListener {
         AuthorizationException authorizationException = AuthorizationException.fromIntent(intent);
         if (authorizationResponse == null) {
             ForgeLog.e("oauth.EventListener::onNewIntent failed to respond to an unknown intent: " + intent.toString());
+            ForgeLog.e("EXCEPTION: " + authorizationException);
             return;
         }
 
