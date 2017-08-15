@@ -4,25 +4,25 @@
 module("oauth");
 
 var config_google = {
-    discovery_endpoint: "https://accounts.google.com/.well-known/openid-configuration",
-    client_id: "627734613405-irkg4q6dbq01h0so0ltb17f9kgc4ubfn.apps.googleusercontent.com",
-    redirect_uri: "com.googleusercontent.apps.627734613405-irkg4q6dbq01h0so0ltb17f9kgc4ubfn:/oauth2redirect",
-    scope: "openid email profile"
+    "client_id": "627734613405-irkg4q6dbq01h0so0ltb17f9kgc4ubfn.apps.googleusercontent.com",
+    "discovery_endpoint": "https://accounts.google.com/.well-known/openid-configuration",
+    "redirect_uri": "com.googleusercontent.apps.627734613405-irkg4q6dbq01h0so0ltb17f9kgc4ubfn:/oauth2redirect",
+    "authorization_scope": "openid email profile"
 };
 
 
 var config_facebook = {
     "client_id": "617039718370339",
     "client_secret": "8344897fc28e067086bae1648596928c",
-    "redirect_uri": "https://docker.trigger.io/oauth2redirect",
-    "authorization_scope": "public_profile",
     "authorization_endpoint": "https://www.facebook.com/dialog/oauth",
-    "token_endpoint": "https://graph.facebook.com/v2.5/oauth/access_token"
+    "token_endpoint": "https://graph.facebook.com/v2.5/oauth/access_token",
+    "redirect_uri": "https://docker.trigger.io/oauth2redirect",
+    "authorization_scope": "public_profile"
 };
 
 
 asyncTest("Attempt to sign out of Google", 1, function () {
-    pforge.oauth.signout(config_google).then(function () {
+    pforge.oauth.signout("google").then(function () {
         ok(true, "Function call succeeded");
         start();
 
@@ -56,7 +56,7 @@ asyncTest("Query discovery endpoint", function () {
 
 
 asyncTest("Attempt to make a oauth login to Google", 1, function () {
-    pforge.oauth.authorize(config_google).then(function (endpoint) {
+    pforge.oauth.authorize("google").then(function (endpoint) {
         askQuestion("Is this Google's authorization endpoint: " + JSON.stringify(endpoint), {
             Yes: function () {
                 ok(true, "User claims success");
@@ -117,7 +117,7 @@ asyncTest("Attempt to get user profile information from Google", 1, function () 
 
 
 asyncTest("Attempt to sign out of Facebook", 1, function () {
-    pforge.oauth.signout(config_facebook).then(function () {
+    pforge.oauth.signout("facebook").then(function () {
         ok(true, "Function call succeeded");
         start();
 
@@ -129,7 +129,7 @@ asyncTest("Attempt to sign out of Facebook", 1, function () {
 
 
 asyncTest("Attempt to make a oauth login to Facebook", 1, function () {
-    pforge.oauth.authorize(config_facebook).then(function (endpoint) {
+    pforge.oauth.authorize("facebook").then(function (endpoint) {
         askQuestion("Is this Facebook's authorization endpoint: " + JSON.stringify(endpoint), {
             Yes: function () {
                 ok(true, "User claims success");

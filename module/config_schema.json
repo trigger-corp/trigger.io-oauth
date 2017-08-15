@@ -43,7 +43,7 @@
                         "type": "string"
                     },
 
-                    "discovery_uri": {
+                    "discovery_endpoint": {
                         "description": "Discovery endpoint for OAuth and OpenID services offered by  the provider.",
                         "required": false,
                         "type": "string"

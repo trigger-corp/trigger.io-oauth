@@ -11,18 +11,18 @@
                 {
                     "name": "google",
                     "client_id": "627734613405-irkg4q6dbq01h0so0ltb17f9kgc4ubfn.apps.googleusercontent.com",
+                    "discovery_endpoint": "https://accounts.google.com/.well-known/openid-configuration",
                     "redirect_uri": "com.googleusercontent.apps.627734613405-irkg4q6dbq01h0so0ltb17f9kgc4ubfn:/oauth2redirect",
-                    "authorization_scope": "openid email profile",
-                    "discovery_uri": "https://accounts.google.com/.well-known/openid-configuration"
+                    "authorization_scope": "openid email profile"
                 },
                 {
                     "name": "facebook",
-                    "client_id": "1493898367579297",
-                    "client_secret": "c29fdd53c851356337d1bcc3139b5e27",
-                    "redirect_uri": "https://docker.trigger.io/oauth2redirect",
-                    "authorization_scope": "public_profile",
+                    "client_id": "617039718370339",
+                    "client_secret": "8344897fc28e067086bae1648596928c",
                     "authorization_endpoint": "https://www.facebook.com/dialog/oauth",
-                    "token_endpoint": "https://graph.facebook.com/v2.5/oauth/access_token"
+                    "token_endpoint": "https://graph.facebook.com/v2.5/oauth/access_token",
+                    "redirect_uri": "https://docker.trigger.io/oauth2redirect",
+                    "authorization_scope": "public_profile"
                 }
             ]
         }
