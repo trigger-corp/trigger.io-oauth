@@ -1,7 +1,7 @@
 {
-    "description": "My module template", 
-    "min_platform_version": "v2.5.5", 
-    "namespace": "oauth", 
-    "platform_version": "v2.5.5", 
-    "version": "0.1"
+	"description": "Secure login for your app with OAuth 2.0 and OpenID Connect providers.",
+	"min_platform_version": "v2.5.5",
+	"namespace": "oauth",
+	"platform_version": "v2.5.5",
+	"version": "0.1"
 }
