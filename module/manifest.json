@@ -1,7 +1,7 @@
 {
-	"description": "Secure login for your app with OAuth 2.0 and OpenID Connect providers.",
-	"min_platform_version": "v2.5.5",
-	"namespace": "oauth",
-	"platform_version": "v2.5.5",
-	"version": "0.1"
+    "description": "Integrate OAuth 2.0 and OpenID Connect providers with your app.",
+    "min_platform_version": "v2.6.1",
+    "namespace": "oauth",
+    "platform_version": "v2.6.1",
+    "version": "0.1"
 }
