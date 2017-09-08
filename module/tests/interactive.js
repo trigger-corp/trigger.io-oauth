@@ -35,14 +35,9 @@ asyncTest("Attempt to sign out of Google", 1, function () {
 
 
 asyncTest("Query discovery endpoint", function () {
-    $.ajax({
-        url: config_google.discovery_endpoint,
-    }).fail(function (e) {
-        ok(false, "REST request failed: " + JSON.stringify(e));
-        start();
-    }).done(function (response) {
-        forge.logging.log("Discovery endpoint says: " + JSON.stringify(response));
-        askQuestion("Does this look like Google's endpoints: <pre>" + JSON.stringify(response, null, 2) + "</pre>", {
+    forge.oauth.discover("google").then(function (configuration) {
+        forge.logging.log("Discovery endpoint says: " + JSON.stringify(configuration));
+        askQuestion("Does this look like Google's endpoints: <pre>" + JSON.stringify(configuration, null, 2) + "</pre>", {
             Yes: function () {
                 ok(true, "User claims success");
                 start();
@@ -52,12 +47,15 @@ asyncTest("Query discovery endpoint", function () {
                 start();
             }
         });
+    }).catch(function (e) {
+        ok(false, "Failure: " + JSON.stringify(e));
+        start();
     });
 });
 
 
 asyncTest("Attempt to make a oauth login to Google", 1, function () {
-    forge.oauth.authorize("google").then(function (endpoint) {
+    forge.oauth.authorize(config_google).then(function (endpoint) {
         askQuestion("Is this Google's authorization endpoint: " + JSON.stringify(endpoint), {
             Yes: function () {
                 ok(true, "User claims success");
@@ -78,23 +76,18 @@ asyncTest("Attempt to make a oauth login to Google", 1, function () {
 
 asyncTest("Attempt to get user profile information from Google", 1, function () {
     var state = {};
-    forge.oauth.authorize(config_google).then(function (endpoint) {
-        return forge.oauth.actionWithToken(endpoint);
+    forge.oauth.discover("google").then(function (configuration) { // discover google endpoints
+        state.configuration = configuration;                       // ... and save them for later
+        return forge.oauth.authorize("google");                    // then authorize this client
+
+    }).then(function (endpoint) {
+        return forge.oauth.actionWithToken(endpoint);              // so we can request a token
 
     }).then(function (token) {
-        state.token = token;
-        return $.ajax({
-            url: config_google.discovery_endpoint,
+        return $.ajax({                                            // to make a request
+            url: state.configuration.userinfo_endpoint,            // ... to one of the endpoints we saved
             headers: {
-                "Authorization": "Bearer " + token.access
-            }
-        });
-
-    }).then(function (response) {
-        return $.ajax({
-            url: response.userinfo_endpoint,
-            headers: {
-                "Authorization": "Bearer " + state.token.access
+                "Authorization": "Bearer " + token.access          // as an authorized client
             }
         });
 

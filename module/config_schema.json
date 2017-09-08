@@ -50,17 +50,17 @@
                     },
 
                     "authorization_endpoint": {
-                        "description": "Authorization endpoint for OAuth provider. (Not required if `discovery_uri` is provided)",
+                        "description": "Authorization endpoint for OAuth provider. (Not required if `discovery_endpoint` is provided)",
                         "required": false,
                         "type": "string"
                     },
                     "token_endpoint": {
-                        "description": "Token endpoint for OAuth provider. (Not required if `discovery_uri` is provided)",
+                        "description": "Token endpoint for OAuth provider. (Not required if `discovery_endpoint` is provided)",
                         "required": false,
                         "type": "string"
                     },
                     "registration_endpoint": {
-                        "description": "Registration endpoint for OAuth provider. (Not required if `discovery_uri` is provided)",
+                        "description": "Registration endpoint for OAuth provider. (Not required if `discovery_endpoint` is provided)",
                         "required": false,
                         "type": "string"
                     }

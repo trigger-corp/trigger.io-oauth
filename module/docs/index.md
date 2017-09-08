@@ -15,9 +15,37 @@ for the auth request.
 redirect_scheme
 :   The redirect scheme used by AppAuth to return to your app after completion of the authorization flow.
 
+### Providers
 
+The `providers` section consists of one or more provider definitions consisting of the following keys:
 
-### Examples
+name
+:   A descriptive name to use when referring to the provider through forge.oauth API calls
+
+client_id
+:   A client id assigned by the OAauth provider.
+
+client_secret
+:   A client secret assigned by the OAuth provider. (Optional)
+
+redirect_uri
+:   Redirect URI invoked by the OAuth provider to return the OAuth response.
+
+authorization_scope
+:   OpenID scope string for authorization request. (Optional).
+
+discovery_endpoint
+:   Discovery endpoint for OAuth and OpenID services offered by  the provider.
+
+authorization_endpoint
+:   Authorization endpoint for OAuth provider. (Not required if `discovery_endpoint` is provided)
+
+token_endpoint
+:   Token endpoint for OAuth provider. (Not required if `discovery_endpoint` is provided)
+
+registration_endpoint
+:   Registration endpoint for OAuth provider. (Not required if `discovery_endpoint` is provided)
+
 
 
 ##API
@@ -37,7 +65,6 @@ redirect_scheme
 !platforms: iOS, Android
 !description: Used to obtain a token that can be used to access the endpoints of the service that has been authorized.
 
-
 !method:forge.oauth.signout(endpoint, success, error)
 !param: endpoint `string` a uri referring to an endpoint returned by forge.oauth.authorize
 !param: success `function()` callback to be invoked when the user has been logged out
@@ -45,37 +72,82 @@ redirect_scheme
 !platforms: iOS, Android
 !description: Logs the user out from a provider endpoint returned by forge.oauth.authorize.
 
+!method:forge.oauth.discover(endpoint, success, error)
+!param: endpoint `string` a name referring to a oauth provider specified in the module's config
+!param: success `function(configuration)` callback to be invoked with discovered configuration
+!param: error   `function(error)` called with details of any error which may occur
+!platforms: iOS, Android
+!description: Queries the OAuth service discovery endpoint. (If configured)
+
 
 
 ## Examples
 
+### src/config.json
+
+    "config": {
+        "redirect_scheme": "com.googleusercontent.apps.xxx",
+        "providers": [
+            {
+                "name": "google",
+                "client_id": "xxx.apps.googleusercontent.com",
+                "discovery_endpoint": "https://accounts.google.com/.well-known/openid-configuration",
+                "redirect_uri": "com.googleusercontent.apps.xxx:/oauth2redirect",
+                "authorization_scope": "openid email profile"
+            },
+            {
+                "name": "facebook",
+                "client_id": "xxx",
+                "client_secret": "xxx",
+                "authorization_endpoint": "https://www.facebook.com/dialog/oauth",
+                "token_endpoint": "https://graph.facebook.com/v2.5/oauth/access_token",
+                "redirect_uri": "https://trigger.io/oauth2redirect",
+                "authorization_scope": "public_profile"
+            }
+        ]
+    }
 
 ### Google
 
     var state = {};
-    pforge.oauth.authorize(config_google_discovery).then(function (endpoint) {
-        return pforge.oauth.actionWithToken(endpoint);
+    forge.oauth.discover("google").then(function (configuration) { // discover google endpoints
+        state.configuration = configuration;                       // ... and save them for later
+        return forge.oauth.authorize("google");                    // then authorize this client
+
+    }).then(function (endpoint) {
+        return forge.oauth.actionWithToken(endpoint);              // so we can request a token
 
     }).then(function (token) {
-        state.token = token;
-        return $.ajax({
-            url: config_google_discovery.discovery_endpoint,
+        return $.ajax({                                            // to make a request
+            url: state.configuration.userinfo_endpoint,            // ... to one of the endpoints we saved
             headers: {
-                "Authorization": "Bearer " + state.token.access
+                "Authorization": "Bearer " + token.access          // as an authorized client
             }
         });
 
-    }).then(function (response) {
-        return $.ajax({
-            url: response.userinfo_endpoint,
+    }).then(function (userinfo) {
+        // do something with the requested information
+
+    }).catch(function (error) {
+        // handle any errors
+    });
+
+### Facebook
+
+    forge.oauth.authorize(config_facebook).then(function (endpoint) { // authorize this client
+        return forge.oauth.actionWithToken(endpoint);                 // so we can request a token
+
+    }).then(function (token) {
+        return $.ajax({                                               // to make a request
+            url: "https://graph.facebook.com/v2.5/me",                // to a Facebook REST API
             headers: {
-                "Authorization": "Bearer " + state.token.access
+                "Authorization": "Bearer " + token.access             // as an authorized client
             }
         });
 
-    }).then(function (profile) {
-        // ... do something with user profile
+    }).then(function (me) {
+        // do something with the requested information
 
-    }).catch(function (e) {
-        // ... handle error
+    }).catch(function (error) {
+        // handle any errors
     });
