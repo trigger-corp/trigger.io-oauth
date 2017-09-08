@@ -1,7 +1,8 @@
-/* global forge, pforge, asyncTest, askQuestion, ok, start, $ */
+/* global forge, asyncTest, askQuestion, ok, start, $ */
 /* jslint node: true */
 
 module("oauth");
+forge.flags.promises(true);
 
 var config_google = {
     "client_id": "627734613405-irkg4q6dbq01h0so0ltb17f9kgc4ubfn.apps.googleusercontent.com",
@@ -22,7 +23,7 @@ var config_facebook = {
 
 
 asyncTest("Attempt to sign out of Google", 1, function () {
-    pforge.oauth.signout("google").then(function () {
+    forge.oauth.signout("google").then(function () {
         ok(true, "Function call succeeded");
         start();
 
@@ -56,7 +57,7 @@ asyncTest("Query discovery endpoint", function () {
 
 
 asyncTest("Attempt to make a oauth login to Google", 1, function () {
-    pforge.oauth.authorize("google").then(function (endpoint) {
+    forge.oauth.authorize("google").then(function (endpoint) {
         askQuestion("Is this Google's authorization endpoint: " + JSON.stringify(endpoint), {
             Yes: function () {
                 ok(true, "User claims success");
@@ -77,8 +78,8 @@ asyncTest("Attempt to make a oauth login to Google", 1, function () {
 
 asyncTest("Attempt to get user profile information from Google", 1, function () {
     var state = {};
-    pforge.oauth.authorize(config_google).then(function (endpoint) {
-        return pforge.oauth.actionWithToken(endpoint);
+    forge.oauth.authorize(config_google).then(function (endpoint) {
+        return forge.oauth.actionWithToken(endpoint);
 
     }).then(function (token) {
         state.token = token;
@@ -117,7 +118,7 @@ asyncTest("Attempt to get user profile information from Google", 1, function () 
 
 
 asyncTest("Attempt to sign out of Facebook", 1, function () {
-    pforge.oauth.signout("facebook").then(function () {
+    forge.oauth.signout("facebook").then(function () {
         ok(true, "Function call succeeded");
         start();
 
@@ -129,7 +130,7 @@ asyncTest("Attempt to sign out of Facebook", 1, function () {
 
 
 asyncTest("Attempt to make a oauth login to Facebook", 1, function () {
-    pforge.oauth.authorize("facebook").then(function (endpoint) {
+    forge.oauth.authorize("facebook").then(function (endpoint) {
         askQuestion("Is this Facebook's authorization endpoint: " + JSON.stringify(endpoint), {
             Yes: function () {
                 ok(true, "User claims success");
@@ -149,8 +150,8 @@ asyncTest("Attempt to make a oauth login to Facebook", 1, function () {
 
 
 asyncTest("Attempt to get user profile information from Facebook", 1, function () {
-    pforge.oauth.authorize(config_facebook).then(function (endpoint) {
-        return pforge.oauth.actionWithToken(endpoint);
+    forge.oauth.authorize(config_facebook).then(function (endpoint) {
+        return forge.oauth.actionWithToken(endpoint);
     }).then(function (token) {
         return $.ajax({
             url: "https://graph.facebook.com/v2.5/me",

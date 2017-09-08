@@ -1,4 +1,4 @@
-/* global forge, pforge */
+/* global forge */
 
 forge.oauth = {
     authorize: function (config, success, error) {
@@ -31,8 +31,3 @@ forge.oauth = {
         forge.internal.call('oauth.signout', {config:config}, success, error);
     }
 };
-
-
-/* - create a version of the API that supports promises ----------------- */
-
-pforge.oauth = pforge.internal.promisify_module(forge, "oauth");

@@ -23,7 +23,6 @@ extern NSMutableDictionary<NSString*, oauth_Delegate*> *DelegateMap;
 
 
 + (NSNumber*)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-
     NSLog(@"oauth_EventListener::openURL -> %@", url);
 
     NSDictionary *response = [url queryAsDictionary];
@@ -45,8 +44,18 @@ extern NSMutableDictionary<NSString*, oauth_Delegate*> *DelegateMap;
     }
     [DelegateMap removeObjectForKey:state];
 
+    // Rewrite URL in case we needed to bounce through a bogus HTTP server for providers that don't support RFC6749
+    NSURL *standardizedRedirectURL = [delegate.request.redirectURL standardizedURL];
+    NSURLComponents *components = [[NSURLComponents alloc] init];
+    components.scheme = standardizedRedirectURL.scheme;
+    components.user = standardizedRedirectURL.user;
+    components.password = standardizedRedirectURL.password;
+    components.host = standardizedRedirectURL.host;
+    components.port = standardizedRedirectURL.port;
+    components.path = standardizedRedirectURL.path;
+    components.query = url.query;
 
-    if ([delegate.currentAuthorizationFlow resumeAuthorizationFlowWithURL:url]) {
+    if ([delegate.currentAuthorizationFlow resumeAuthorizationFlowWithURL:components.URL]) {
         // success
         NSLog(@"SUCCESS");
         delegate.currentAuthorizationFlow = nil;

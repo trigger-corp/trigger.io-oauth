@@ -102,6 +102,11 @@ extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
             return;
         }
 
+        // Facebook likes to return a nil idToken it would appear
+        if (idToken == nil) {
+            idToken = @"";
+        }
+
         [task success:@{@"access": accessToken,
                         @"id": idToken }];
     }];

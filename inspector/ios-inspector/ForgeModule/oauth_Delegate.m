@@ -85,6 +85,7 @@ NSMutableDictionary<NSString*, oauth_Delegate*> *DelegateMap = nil;
         DelegateMap = [[NSMutableDictionary alloc] init];
     }
     [DelegateMap setObject:self forKey:request.state];
+    self.request = request;
     self.currentAuthorizationFlow = [OIDAuthState authStateByPresentingAuthorizationRequest:request
                                                                        presentingViewController:[[ForgeApp sharedApp] viewController]
     callback:^(OIDAuthState *_Nullable authorizationState, NSError *_Nullable error) {
