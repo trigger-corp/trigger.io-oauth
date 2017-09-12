@@ -80,34 +80,29 @@ registration_endpoint
 !description: Queries the OAuth service discovery endpoint. (If configured)
 
 
+---
 
-## Examples
+## Example: Google
 
-### src/config.json
+#### Provider Configuration
 
-    "config": {
-        "redirect_scheme": "com.googleusercontent.apps.xxx",
-        "providers": [
-            {
-                "name": "google",
-                "client_id": "xxx.apps.googleusercontent.com",
-                "discovery_endpoint": "https://accounts.google.com/.well-known/openid-configuration",
-                "redirect_uri": "com.googleusercontent.apps.xxx:/oauth2redirect",
-                "authorization_scope": "openid email profile"
-            },
-            {
-                "name": "facebook",
-                "client_id": "xxx",
-                "client_secret": "xxx",
-                "authorization_endpoint": "https://www.facebook.com/dialog/oauth",
-                "token_endpoint": "https://graph.facebook.com/v2.5/oauth/access_token",
-                "redirect_uri": "https://trigger.io/oauth2redirect",
-                "authorization_scope": "public_profile"
-            }
-        ]
+    "oauth2": {
+        "version": "1.x",
+        "config": {
+            "redirect_scheme": "com.googleusercontent.apps.xxx",
+            "providers": [
+                {
+                    "name": "google",
+                    "client_id": "xxx.apps.googleusercontent.com",
+                    "discovery_endpoint": "https://accounts.google.com/.well-known/openid-configuration",
+                    "redirect_uri": "com.googleusercontent.apps.xxx:/oauth2redirect",
+                    "authorization_scope": "openid email profile"
+                }
+            ]
+        }
     }
 
-### Google
+#### Making a Request
 
     var state = {};
     forge.oauth.discover("google").then(function (configuration) { // discover google endpoints
@@ -132,9 +127,35 @@ registration_endpoint
         // handle any errors
     });
 
-### Facebook
 
-    forge.oauth.authorize(config_facebook).then(function (endpoint) { // authorize this client
+---
+
+## Example: Facebook
+
+#### Provider Configuration
+
+    "oauth2": {
+        "version": "1.x",
+        "config": {
+            "redirect_scheme": "io.trigger.example.oauth2",
+            "providers": [
+                {
+                    "name": "facebook",
+                    "client_id": "xxx",
+                    "client_secret": "xxx",
+                    "authorization_endpoint": "https://www.facebook.com/dialog/oauth",
+                    "token_endpoint": "https://graph.facebook.com/v2.5/oauth/access_token",
+                    "redirect_uri": "https://trigger.io/example/oauth2redirect",
+                    "authorization_scope": "public_profile"
+                }
+            ]
+        }
+    }
+
+#### Making a Request
+
+
+    forge.oauth.authorize("facebook").then(function (endpoint) { // authorize this client
         return forge.oauth.actionWithToken(endpoint);                 // so we can request a token
 
     }).then(function (token) {
@@ -151,3 +172,18 @@ registration_endpoint
     }).catch(function (error) {
         // handle any errors
     });
+
+
+#### Redirect Page
+
+    <!DOCTYPE html>
+    <html>
+        <body>
+            <a id="proceed" href="/">Click to return to app</a>
+            <script>
+                var newOrigin = "io.trigger.example.oauth2:/";
+                var uriSuffix = window.location.href.substring(window.location.origin.length + 1);
+                document.getElementById("proceed").href = newOrigin + uriSuffix;
+            </script>
+        </body>
+    </html>
