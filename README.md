@@ -1,5 +1,5 @@
-# share module for Trigger.io
+# oauth module for Trigger.io
 
-This repository holds everything required to build the share [Trigger.io](https://trigger.io/) module.
+This repository holds everything required to build the oauth [Trigger.io](https://trigger.io/) module.
 
 For more information about working on Trigger.io native modules, see [the documentation](https://trigger.io/docs/current/api/native_modules/index.html).
