@@ -132,6 +132,9 @@ registration_endpoint
 
 ## Example: Facebook
 
+See our [Facebook OAuth Tutorial](tutorial-facebook.html) for a more detailed example.
+
+
 #### Provider Configuration
 
     "oauth2": {
