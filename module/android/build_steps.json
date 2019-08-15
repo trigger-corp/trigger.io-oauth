@@ -1,6 +1,6 @@
 [
     { "do": { "android_set_min_sdk_version": "16"} },
-    { "do": { "android_add_gradle_dependency": "net.openid:appauth:0.6.1"} },
+    { "do": { "android_add_gradle_dependency": "net.openid:appauth:0.7.1"} },
     { "do": { "android_add_gradle_manifest_placeholder": {
         "key": "appAuthRedirectScheme",
         "value": "{{modules.oauth.config.redirect_scheme}}"
