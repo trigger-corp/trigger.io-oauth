@@ -55,7 +55,7 @@ extern NSMutableDictionary<NSString*, oauth_Delegate*> *DelegateMap;
     components.path = standardizedRedirectURL.path;
     components.query = url.query;
 
-    if ([delegate.currentAuthorizationFlow resumeAuthorizationFlowWithURL:components.URL]) {
+    if ([delegate.currentAuthorizationFlow resumeExternalUserAgentFlowWithURL:components.URL]) {
         // success
         NSLog(@"SUCCESS");
         delegate.currentAuthorizationFlow = nil;

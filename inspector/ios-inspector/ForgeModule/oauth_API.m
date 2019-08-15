@@ -11,7 +11,7 @@
 #import "oauth_Delegate.h"
 #import "oauth_API.h"
 
-extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
+extern id<OIDExternalUserAgentSession> currentAuthorizationFlow;
 
 @implementation oauth_API
 
@@ -21,8 +21,10 @@ extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
         NSURL *discovery_endpoint = [NSURL URLWithString:[config objectForKey:@"discovery_endpoint"]];
         [OIDAuthorizationService discoverServiceConfigurationForDiscoveryURL:discovery_endpoint completion:^(OIDServiceConfiguration *_Nullable configuration, NSError *_Nullable error) {
             if (!configuration) {
-                NSLog(@"Error retrieving discovery document: %@", [error localizedDescription]);
-                [task error:[error localizedDescription]];
+                NSDictionary *userInfo = [error userInfo];
+                NSString *errorString = [[userInfo objectForKey:NSUnderlyingErrorKey] localizedDescription];
+                NSLog(@"Error retrieving discovery document: %@", errorString);
+                [task error:errorString];
                 return;
             }
             [oauth_API _authorize_with_configuration:task config:config configuration:configuration];
@@ -74,11 +76,15 @@ extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
 
     oauth_Delegate *delegate = [oauth_Delegate delegateWithAuthorizationEndpoint:[configuration authorizationEndpoint]];
     [delegate authorizeWithConfiguration:configuration
-              client_id:client_id client_secret:client_secret
-           redirect_uri:redirect_uri authorization_scope:authorization_scope
-               callback:^(OIDAuthState *_Nullable authorizationState, NSError *_Nullable error) {
+                               client_id:client_id
+                           client_secret:client_secret
+                            redirect_uri:redirect_uri
+                     authorization_scope:authorization_scope
+                                callback:^(OIDAuthState *_Nullable authorizationState, NSError *_Nullable error) {
         if (!authorizationState) {
-            [task error:[NSString stringWithFormat:@"Authorization error: %@", [error localizedDescription]] type:@"EXPECTED_FAILTURE" subtype:nil];
+            NSDictionary *userInfo = [error userInfo];
+            NSString *errorString = [[userInfo objectForKey:NSUnderlyingErrorKey] localizedDescription];
+            [task error:[NSString stringWithFormat:@"Authorization error: %@", errorString] type:@"EXPECTED_FAILURE" subtype:nil];
         } else {
             [task success:configuration.authorizationEndpoint.absoluteString];
         }
@@ -89,7 +95,7 @@ extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
 + (void)actionWithToken:(ForgeTask*)task endpoint:(NSString*)endpoint {
     oauth_Delegate *delegate = [oauth_Delegate delegateWithAuthorizationEndpoint:[NSURL URLWithString:endpoint]];
     if (delegate.authorizationState == nil || !delegate.authorizationState.isAuthorized) {
-        [task error:@"Endpoint is not authorized" type:@"EXPECTED_FAILTURE" subtype:nil];
+        [task error:@"Endpoint is not authorized" type:@"EXPECTED_FAILURE" subtype:nil];
         return;
     }
 
@@ -97,8 +103,10 @@ extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
                                                                 NSString *_Nonnull idToken,
                                                                 NSError *_Nullable error) {
         if (error) {
-            NSLog(@"Error obtaining token: %@", [error localizedDescription]);
-            [task error:[NSString stringWithFormat:@"Error obtaining token: %@", [error localizedDescription]] type:@"EXPECTED_FAILTURE" subtype:nil];
+            NSDictionary *userInfo = [error userInfo];
+            NSString *errorString = [[userInfo objectForKey:NSUnderlyingErrorKey] localizedDescription];
+            NSLog(@"Error obtaining token: %@", errorString);
+            [task error:[NSString stringWithFormat:@"Error obtaining token: %@", errorString] type:@"EXPECTED_FAILURE" subtype:nil];
             return;
         }
 
@@ -128,8 +136,10 @@ extern id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
         NSURL *discovery_endpoint = [NSURL URLWithString:[config objectForKey:@"discovery_endpoint"]];
         [OIDAuthorizationService discoverServiceConfigurationForDiscoveryURL:discovery_endpoint completion:^(OIDServiceConfiguration *_Nullable configuration, NSError *_Nullable error) {
             if (!configuration) {
-                NSLog(@"Error retrieving discovery document: %@", [error localizedDescription]);
-                [task error:[error localizedDescription]];
+                NSDictionary *userInfo = [error userInfo];
+                NSString *errorString = [[userInfo objectForKey:NSUnderlyingErrorKey] localizedDescription];
+                NSLog(@"Error retrieving discovery document: %@", errorString);
+                [task error:errorString];
                 return;
             }
             NSURL *endpoint = configuration.authorizationEndpoint;

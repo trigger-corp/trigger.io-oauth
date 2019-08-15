@@ -16,7 +16,7 @@
 
 @property(nonatomic, strong, nullable) NSString *persistKey;
 @property(nonatomic, strong, nullable) OIDAuthState *authorizationState;
-@property(nonatomic, strong, nullable) id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
+@property(nonatomic, strong, nullable) id<OIDExternalUserAgentSession> currentAuthorizationFlow;
 @property(nonatomic, strong, nullable) OIDAuthorizationRequest *request;
 
 + (oauth_Delegate*_Nullable) delegateWithAuthorizationEndpoint:(NSURL*_Nonnull)authorizationEndpoint;
