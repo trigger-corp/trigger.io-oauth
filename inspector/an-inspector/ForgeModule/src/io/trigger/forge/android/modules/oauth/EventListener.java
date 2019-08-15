@@ -13,7 +13,7 @@ import io.trigger.forge.android.core.ForgeLog;
 public class EventListener extends ForgeEventListener {
     @Override
     public void onStart() {
-        Delegate.authService = new AuthorizationService(ForgeApp.getActivity().getApplicationContext());
+        Delegate.authService = new AuthorizationService(ForgeApp.getActivity());
     }
 
     @Override
