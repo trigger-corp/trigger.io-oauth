@@ -1,7 +1,8 @@
 package io.trigger.forge.android.modules.oauth;
 
 import android.net.Uri;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 
@@ -9,7 +10,6 @@ import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationException;
 import net.openid.appauth.AuthorizationServiceConfiguration;
 import net.openid.appauth.AuthorizationServiceConfiguration.RetrieveConfigurationCallback;
-import net.openid.appauth.AuthorizationServiceDiscovery;
 
 import io.trigger.forge.android.core.ForgeLog;
 import io.trigger.forge.android.core.ForgeParam;
