@@ -1,7 +1,8 @@
 {
+    "changes": "* Bump AppAuth-Android SDK to 0.7.1\n* Bump AppAuth-iOS SDK to 1.1.0\n* Migrate module to androidx\nFixed: iOS 13 SDK breaks oauth logon\nFixed: Crash on Android when attempting a Google login",
     "description": "Integrate OAuth 2.0 and OpenID Connect providers with your app.",
-    "min_platform_version": "v2.6.1",
+    "min_platform_version": "v2.8.0",
     "namespace": "oauth",
-    "platform_version": "v2.6.1",
-    "version": "0.1"
+    "platform_version": "v2.8.0",
+    "version": "1.0"
 }
