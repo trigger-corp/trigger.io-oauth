@@ -4,5 +4,18 @@
     { "do": { "android_add_gradle_manifest_placeholder": {
         "key": "appAuthRedirectScheme",
         "value": "{{modules.oauth.config.redirect_scheme}}"
-    } } }
+    } } },
+    { "do": { "android_add_to_manifest": { "element": {
+        "tag": "queries",
+        "children": [
+            {
+                "tag": "intent",
+                "children": [
+                    { "tag": "action", "attributes": { "android:name": "android.intent.action.VIEW" } },
+                    { "tag": "category", "attributes": { "android:name": "android.intent.category.APP_BROWSER"  } },
+                    { "tag": "data", "attributes": { "android:scheme": "https" } }
+                ]
+            }
+        ]
+    } } } }
 ]
